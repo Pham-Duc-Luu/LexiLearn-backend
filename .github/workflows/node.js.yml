@@ -17,7 +17,15 @@ jobs:
                 # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
         steps:
-            - uses: actions/checkout@v4
+            # set up environment
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Create .env file
+              run: |
+                  touch .env
+                  echo "${{secrets.TEST_SECRETS}}" >> .env1
+
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v4
               with:
