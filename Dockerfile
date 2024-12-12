@@ -16,7 +16,7 @@ COPY . .
 # Build the application
 RUN npm run build
 
-
+EXPOSE 5050
 
 # Command to run the application
 CMD ["npm", "run", "start"]
