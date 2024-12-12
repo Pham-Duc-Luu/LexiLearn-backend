@@ -1,7 +1,8 @@
 export default () => ({
     port: parseInt(process.env.PORT, 10) || 3000,
+
     database: {
-        mongodb_main: { url: process.env.MONGODBURL || 'mongodb://localhost:27017', name: 'MAIN' },
+        mongodb_main: { url: process.env.MONGODBURL || 'mongodb://localhost:27017', name: 'production' },
         mongodb_bin: { url: process.env.MONGODBURL_BIN || 'mongodb://localhost:27017', name: 'BIN' },
     },
     jwtConstant: {
@@ -37,5 +38,19 @@ export default () => ({
             user: process.env.HOST_EMAIL_USER || 'maddison53@ethereal.email',
             pass: process.env.HOST_EMAIL_PASS || 'jn7jnAPss4f63QBp6D',
         },
+    },
+
+    getApiKeys: () => {
+        const list_of_keys: string[] = [];
+        let i = 1;
+        while (1) {
+            if (!process.env[`BACKEND_API_KEY_${i}`]) {
+                break;
+            }
+            list_of_keys.push(process.env[`BACKEND_API_KEY_${i}`]);
+            i++;
+        }
+
+        return list_of_keys;
     },
 });

@@ -3,13 +3,15 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import * as cookieParser from 'cookie-parser';
+import { Request, Response } from 'express'; // Import Express types
 import helmet from 'helmet';
 import * as compression from 'compression';
 import NestjsLoggerServiceAdapter from 'libs/logger/logger/infrastructure/nestjs/nestjsLoggerServiceAdapter';
 import { TimeoutInterceptor } from './Interceptor/timeout.interceptor';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { DelayInterceptor } from './Interceptor/delay.interceptor';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { ApiKeyMiddleware } from './middleware/ApiKeyMiddleware';
 async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule, { bufferLogs: true });
     app.setGlobalPrefix('api/v1');
@@ -43,6 +45,13 @@ async function bootstrap() {
     // app.useGlobalInterceptors(new DelayInterceptor(2000));
     app.useLogger(app.get(NestjsLoggerServiceAdapter));
     app.useGlobalInterceptors(new TimeoutInterceptor(5000)); // 5000ms = 5 seconds
+
+    // Manually add a route without the global prefix
+    const httpAdapter = app.getHttpAdapter();
+    httpAdapter.get('/', (req: Request, res: Response) => {
+        res.send('Welcome to LexiLearn!');
+    });
     await app.listen(configService.get('port'));
+    Logger.log(`Application is running on: http://localhost:${configService.get('port')}`);
 }
 bootstrap();

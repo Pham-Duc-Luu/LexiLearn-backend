@@ -21,6 +21,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule } from './auth/auth.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { GqlThrottlerGuard } from './guard/GqlThrottlerGuard';
+import { ApiKeyMiddleware } from './middleware/ApiKeyMiddleware';
 // import { LoggerModule } from '@nestjs-logger/shared/logger/infrastructure/nestjs/loggerModule';
 // import { ConfigModule } from '@nestjs-logger/shared/config/infrastructure/nestjs/configModule';
 // import { ContextModule } from '@nestjs-logger/shared/context/infrastructure/nestjs/contextModule';
@@ -107,4 +108,19 @@ import { GqlThrottlerGuard } from './guard/GqlThrottlerGuard';
     ],
     exports: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+        // Apply middleware to all routes
+        consumer.apply(ApiKeyMiddleware).forRoutes('*');
+
+        // Alternatively, apply to specific routes:
+        /*
+      consumer
+        .apply(ApiKeyMiddleware)
+        .forRoutes(
+          { path: 'products', method: RequestMethod.ALL },
+          { path: 'orders', method: RequestMethod.ALL }
+        );
+      */
+    }
+}
